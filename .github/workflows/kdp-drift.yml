@@ -1,0 +1,26 @@
+# KDP changes its specifications without notice. Once a week, scrape the Help
+# Center fresh and check every constant kdp/specs cites is still there, and
+# that the trim-size and margin tables have not moved. A failure here means
+# KDP changed a rule and a human needs to look, not that the code broke.
+name: kdp-drift
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements-dev.txt
+      - name: Build the KDP wiki
+        run: python -m kdp wiki build
+      - name: Cited constants still appear in their topics
+        run: python -m pytest -q tests/test_specs_match_wiki.py tests/test_plugin_surface.py
+      - name: Trim-size and margin tables unchanged
+        run: git diff --exit-code kdp/specs/trim_sizes.json

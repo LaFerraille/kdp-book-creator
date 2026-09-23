@@ -1,0 +1,16 @@
+# Runtime, plus what the tests, the linter and the README images need.
+#
+#   uv pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+pytest>=8.0
+ruff>=0.6
+
+# Cross-checking cover geometry against KDP's live calculator (kdp build
+# --verify-cover). Optional: the build works offline without it.
+playwright>=1.40
+
+# Rendering the wiki graph to docs/images/wiki-graph.png (kdp wiki build --png).
+networkx>=3.0
+matplotlib>=3.8

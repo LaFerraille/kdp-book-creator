@@ -1,0 +1,18 @@
+# The local KDP wiki: Amazon's content, built on each user's own machine by
+# `python -m kdp wiki build`. Never redistributed from this repository.
+/wiki/
+
+# Book output. Created on demand by `python -m kdp build`.
+/build/
+
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+.env
+dist/
+*.egg-info/
+.claude/settings.local.json
+.remember/

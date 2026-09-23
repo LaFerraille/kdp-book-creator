@@ -1,0 +1,15 @@
+{
+  "name": "kdp-book-creator",
+  "owner": {"name": "Raphael Romand-Ferroni", "url": "https://github.com/LaFerraille"},
+  "metadata": {
+    "description": "Book formatting for Amazon KDP, grounded in KDP's own documentation."
+  },
+  "plugins": [
+    {
+      "name": "kdp-book-creator",
+      "source": "./",
+      "description": "Manuscript to upload-ready KDP interior, cover and ebook. Formatting only: it never writes or changes your words.",
+      "category": "productivity"
+    }
+  ]
+}

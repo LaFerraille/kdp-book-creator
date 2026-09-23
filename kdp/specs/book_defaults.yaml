@@ -1,0 +1,111 @@
+# What "I don't know" resolves to, keyed by book type.
+#
+# The interview never invents a default inline; it reads this table. That makes
+# the behaviour inspectable and adjustable without touching the skill prose,
+# and it means two runs of the same interview answer the same way.
+#
+# Every default carries its reasoning, because the interview has to say *why*
+# it chose something, not merely what.
+
+narrative_nonfiction:        # memoir, travel, biography, essay
+  trim: [5.5, 8.5]
+  trim_reason: "Trade-paperback convention for narrative prose; readers associate it with the genre."
+  paper: cream
+  paper_reason: "Warmer and easier on the eye for continuous reading. Standard for prose."
+  font: EB Garamond
+  font_pt: 11
+  leading_ratio: 1.32
+  toc: true
+  toc_depth: chapters
+  toc_reason: "Dated or titled chapters make a useful map; listing every section buries it."
+  indent_paragraphs: true
+  running_heads: true
+  chapters_start_recto: true
+
+novel:
+  trim: [5.25, 8.0]
+  trim_reason: "Slightly smaller than memoir; the usual mass-market-adjacent trade size."
+  paper: cream
+  font: EB Garamond
+  font_pt: 11
+  leading_ratio: 1.34
+  toc: false
+  toc_reason: "Novels rarely carry one; readers move linearly."
+  indent_paragraphs: true
+  running_heads: true
+  chapters_start_recto: true
+
+practical_nonfiction:        # how-to, reference, business
+  trim: [6.0, 9.0]
+  trim_reason: "Roomier measure suits headings, lists and figures."
+  paper: white
+  paper_reason: "Higher contrast for diagrams, tables and code."
+  font: Palatino
+  font_pt: 10.5
+  leading_ratio: 1.36
+  toc: true
+  toc_depth: chapters+sections
+  toc_reason: "Readers jump to a specific procedure, so sections must be findable."
+  indent_paragraphs: false
+  indent_reason: "Block paragraphs read better in instructional text."
+  running_heads: true
+  chapters_start_recto: true
+
+poetry:
+  trim: [6.0, 9.0]
+  trim_reason: "A wide measure keeps long lines from wrapping, which changes the poem."
+  paper: cream
+  font: EB Garamond
+  font_pt: 11
+  leading_ratio: 1.45
+  leading_reason: "Verse needs air; tight leading fights the line breaks."
+  toc: true
+  toc_depth: chapters
+  indent_paragraphs: false
+  running_heads: false
+  running_heads_reason: "A running head over a poem is visual noise."
+  chapters_start_recto: true
+
+drama:                       # a play, in verse or prose
+  trim: [6.0, 9.0]
+  trim_reason: "A wide measure keeps verse lines from wrapping; a wrapped pentameter reads as a mistake."
+  paper: cream
+  font: EB Garamond
+  font_pt: 11
+  leading_ratio: 1.38
+  leading_reason: "Between prose and verse: speech headings need air without the page looking sparse."
+  toc: true
+  toc_depth: chapters+sections
+  toc_reason: "Acts and scenes are both navigation - a reader or a class is looking for II.ii, not page 74."
+  indent_paragraphs: false
+  indent_reason: "Speeches are set flush; an indent reads as a new paragraph inside one speech."
+  running_heads: true
+  running_heads_reason: "A play is referenced, not just read, so the act belongs at the top of the page."
+  chapters_start_recto: true
+
+childrens:
+  trim: [8.5, 8.5]
+  trim_reason: "Square formats suit full-page illustration."
+  paper: premium_color
+  paper_reason: "Illustration needs colour; premium holds detail."
+  font: Palatino
+  font_pt: 14
+  leading_ratio: 1.5
+  toc: false
+  indent_paragraphs: false
+  running_heads: false
+  chapters_start_recto: false
+
+workbook:
+  trim: [8.5, 11.0]
+  trim_reason: "Letter-sized, so people can write in it and photocopy pages."
+  paper: white
+  font: Palatino
+  font_pt: 11
+  leading_ratio: 1.4
+  toc: true
+  toc_depth: chapters+sections
+  indent_paragraphs: false
+  running_heads: true
+  chapters_start_recto: false
+  recto_reason: "Forcing recto wastes pages in a book meant to be consumed, not shelved."

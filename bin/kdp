@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+# `kdp` on PATH for Claude Code (plugins put bin/ on the Bash tool's PATH).
+#
+# Runs `python -m kdp` from the plugin's own directory, whatever the working
+# directory is, in a private virtualenv created on first use. Book output goes
+# to ./build in the directory you run it from, not inside the plugin's cache.
+set -e
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+VENV="$ROOT/.venv"
+
+# Windows venvs keep the interpreter in Scripts/, everything else in bin/.
+python_in_venv() {
+    for candidate in "$VENV/bin/python" "$VENV/Scripts/python.exe"; do
+        [ -x "$candidate" ] && echo "$candidate" && return 0
+    done
+    return 1
+}
+
+# The marker is written only once the requirements are in, so an install that
+# died halfway (no network, a missing wheel) is retried instead of trusted.
+if [ ! -f "$VENV/.kdp-installed" ] || ! PY="$(python_in_venv)"; then
+    echo "kdp: first run - creating $VENV and installing requirements ..." >&2
+    if command -v uv >/dev/null 2>&1; then
+        uv venv -q --allow-existing --python 3.11 "$VENV" >&2
+        PY="$(python_in_venv)"
+        uv pip install -q --python "$PY" -r "$ROOT/requirements.txt" >&2
+    else
+        for base in python3 python; do
+            if command -v "$base" >/dev/null 2>&1 &&
+               "$base" -c 'import sys; sys.exit(sys.version_info < (3, 11))' 2>/dev/null; then
+                break
+            fi
+            base=""
+        done
+        if [ -z "$base" ]; then
+            echo "kdp: needs Python 3.11 or newer (or uv, which fetches it)." >&2
+            exit 1
+        fi
+        "$base" -m venv "$VENV" >&2
+        PY="$(python_in_venv)"
+        "$PY" -m pip install -q -r "$ROOT/requirements.txt" >&2
+    fi
+    touch "$VENV/.kdp-installed"
+fi
+
+export KDP_BUILD_DIR="${KDP_BUILD_DIR:-$PWD/build}"
+export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
+exec "$PY" -m kdp "$@"

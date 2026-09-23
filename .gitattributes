@@ -1,0 +1,5 @@
+# LF everywhere, whatever the checkout platform: bin/kdp is a shell script and
+# `#!/usr/bin/env sh\r` does not run, and the manuscripts are test fixtures.
+* text=auto eol=lf
+*.png binary
+*.gif binary

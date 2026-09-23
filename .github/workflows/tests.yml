@@ -1,0 +1,97 @@
+# The suite that runs on a machine nobody has configured.
+#
+# The end-to-end tests need a LaTeX engine and skip without one, so this job
+# installs one and the hyphenation patterns. A suite that is green because its
+# end-to-end layer skipped is green and hollow.
+name: tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install TeX Live
+        # scheme-basic plus what the interior and the cover actually load.
+        # hyphen-french is the point of the exercise: without it polyglossia
+        # sets French with English patterns and says nothing, which is the one
+        # failure in this pipeline with no symptom in the output.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-xetex \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            tex-gyre \
+            lmodern \
+            texlive-latex-extra \
+            texlive-lang-french \
+            texlive-lang-german \
+            texlive-lang-spanish \
+            texlive-lang-italian \
+            texlive-lang-portuguese \
+            fontconfig
+          kpsewhich memoir.cls
+          kpsewhich polyglossia.sty
+          kpsewhich ebgaramond.sty
+          kpsewhich tgpagella.sty
+          # Debian ships ebgaramond.sty without the Initials font it loads.
+          # XeTeX finds it by file name through the TeX tree, so TEXMFHOME.
+          dest="$(kpsewhich -var-value TEXMFHOME)/fonts/opentype/public/ebgaramond"
+          mkdir -p "$dest"
+          curl -sSfL -o "$dest/EBGaramond-Initials.otf" \
+            https://mirrors.ctan.org/fonts/ebgaramond/opentype/EBGaramond-Initials.otf
+          kpsewhich EBGaramond-Initials.otf
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Report what this machine can do
+        # Not a gate: doctor exits 1 when anything optional is missing. It is
+        # here so a failure below can be read against a known environment.
+        run: python -m kdp doctor || true
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Run the suite
+        run: python -m pytest -q
+
+      - name: No end-to-end test may skip
+        # A skip here means the engine went missing and the suite went quiet
+        # about it.
+        run: |
+          set -o pipefail
+          python -m pytest tests/test_end_to_end.py -q -rs | tee /tmp/e2e.txt
+          if grep '^SKIPPED' /tmp/e2e.txt; then
+            echo "::error::end-to-end tests skipped"
+            exit 1
+          fi
+
+      - name: The build is byte-reproducible
+        # Asserted here rather than in the suite because it needs two full
+        # renders, and because a build that differs between machines is a CI
+        # question by nature. `|| true`: the fixture is shorter than KDP's page
+        # minimum, so preflight exits 1; the files are written all the same.
+        run: |
+          python -m kdp build tests/fixtures/novel-fr.md --out /tmp/one \
+            --title "L'Atelier des Reliures" --author "Jeanne Delorme" || true
+          python -m kdp build tests/fixtures/novel-fr.md --out /tmp/two \
+            --title "L'Atelier des Reliures" --author "Jeanne Delorme" || true
+          for kind in interior.pdf cover.pdf ebook.epub; do
+            a=$(ls /tmp/one/*$kind) && b=$(ls /tmp/two/*$kind)
+            cmp "$a" "$b"  # a difference fails the step (bash -e)
+            echo "$kind is identical"
+          done

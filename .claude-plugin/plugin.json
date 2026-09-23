@@ -1,0 +1,10 @@
+{
+  "name": "kdp-book-creator",
+  "version": "1.0.0",
+  "description": "Format a finished manuscript into upload-ready Amazon KDP paperback, hardcover and ebook files, checked against a local knowledge graph of KDP's own documentation. Formatting only: it never writes or changes your words.",
+  "author": {"name": "Raphael Romand-Ferroni", "url": "https://github.com/LaFerraille"},
+  "homepage": "https://github.com/LaFerraille/kdp-book-creator",
+  "repository": "https://github.com/LaFerraille/kdp-book-creator",
+  "license": "MIT",
+  "keywords": ["kdp", "self-publishing", "book", "typesetting", "latex", "epub", "pdf", "amazon", "knowledge-graph"]
+}

@@ -1,0 +1,17 @@
+# Everything the book pipeline and the KDP wiki need at runtime.
+#
+#   uv venv
+#   uv pip install -r requirements.txt
+#   python -m kdp doctor
+#
+# There is deliberately no build system and nothing to install from this
+# repository: `kdp` is a package at the root, so Python finds it by being run
+# from here. See kdp/__main__.py for why that matters.
+
+pyyaml>=6.0
+pikepdf>=9.0
+lxml>=5.0
+
+# Building the local KDP wiki (python -m kdp wiki build).
+beautifulsoup4>=4.12
+markdownify>=0.13
